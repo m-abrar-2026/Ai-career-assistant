@@ -1249,28 +1249,30 @@ def clear_notifications():
 
 
 @app.route("/update-email-preference", methods=["POST"])
-@login_required
 def update_email_preference():
-    db_session = SessionLocal()
+    if "user_id" not in session:
+        return redirect("/")
+
+    db = SessionLocal()
     try:
-        # Merge current_user into this session to prevent detached instance errors
-        user = db_session.merge(current_user)
+        user = db.query(User).filter(User.id == session["user_id"]).first()
+        if user:
+            # If the checkbox is checked, 'email_enabled' will be in request.form
+            user.email_enabled = 'email_enabled' in request.form
+            db.commit()
 
-        # Checkbox is in form if checked, otherwise missing
-        user.email_enabled = 'email_enabled' in request.form
-        db_session.commit()
-
-        status = "enabled" if user.email_enabled else "disabled"
-        flash(f"Email notifications have been {status}.", "success")
+            status = "enabled" if user.email_enabled else "disabled"
+            flash(f"Email preferences have been {status}.", "success")
+        else:
+            flash("User session not found.", "error")
     except Exception as e:
-        db_session.rollback()
+        db.rollback()
+        print(f"Error updating email preference: {e}")
         flash("Failed to update email preference. Please try again.", "error")
     finally:
-        db_session.close()
+        db.close()
 
     return redirect(url_for('profile'))
-
-
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
     app.run(host="0.0.0.0", port=port)
