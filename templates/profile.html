@@ -48,27 +48,13 @@
             font-size: 0.95rem;
             transition: color 0.2s;
         }
-        .nav-links a:hover, .nav-links a.active {
+        .nav-links a:hover {
             color: #2563eb;
         }
         .nav-actions {
             display: flex;
             align-items: center;
             gap: 16px;
-        }
-        .btn-secondary {
-            text-decoration: none;
-            background: #f3f4f6;
-            color: #374151;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            border: 1px solid #d1d5db;
-            transition: background 0.2s;
-        }
-        .btn-secondary:hover {
-            background: #e5e7eb;
         }
         .user-badge {
             background: #2563eb;
@@ -137,7 +123,6 @@
             flex-direction: column;
             gap: 10px;
         }
-        /* Custom scrollbar styling for clean look */
         .resumes-scroll-container::-webkit-scrollbar {
             width: 6px;
         }
@@ -226,7 +211,6 @@
                 <a href="/upload-resume">Upload Resume</a>
             </nav>
             <div class="nav-actions">
-                <a href="/test-email" class="btn-secondary">Test Email</a>
                 <span class="user-badge">Account</span>
             </div>
         </header>
@@ -265,7 +249,7 @@
             <!-- Grid Layout for Resumes, Controls, and Email Toggle -->
             <div class="panels-grid">
 
-                <!-- Left Column: Uploaded Resumes (with scroll bar) -->
+                <!-- Left Column: Uploaded Resumes -->
                 <div class="profile-card">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                         <h3 style="margin: 0; color: #1f2937; font-size: 1.1rem;">Uploaded Resumes</h3>
