@@ -8,6 +8,39 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
+        @media (max-width: 768px) {
+    /* Stack multi-column sections into single columns */
+    .top-grid,
+    .panels-grid,
+    .tools-grid,
+    .stats-row {
+        grid-template-columns: 1fr !important;
+        gap: 16px;
+    }
+
+    /* Reduce dashboard padding so content doesn't touch screen edges */
+    .dashboard-content {
+        padding: 16px;
+    }
+
+    .top-header {
+        padding: 0 16px;
+    }
+
+    /* Scale down the welcome banner text for mobile screens */
+    .welcome-banner {
+        padding: 24px;
+    }
+
+    .welcome-banner h1 {
+        font-size: 1.6rem;
+    }
+
+    /* Ensure the sidebar overlays properly on mobile when toggled */
+    .sidebar {
+        width: 240px;
+    }
+}
         * {
             margin: 0;
             padding: 0;
