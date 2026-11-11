@@ -83,8 +83,12 @@ def create_notification(db, user_id, message):
 
 
 def send_interview_email(email, company, role, interview_date):
-    if not app.config["MAIL_USERNAME"] or not app.config["MAIL_PASSWORD"]:
-        print("Email not sent: MAIL_USERNAME or MAIL_PASSWORD is missing in environment variables.")
+    if not app.config.get("MAIL_USERNAME") or not app.config.get("MAIL_PASSWORD"):
+        print("Email not sent: MAIL_USERNAME or MAIL_PASSWORD is missing.")
+        return False
+
+    if not email:
+        print("Email not sent: Recipient email address is missing or empty.")
         return False
 
     try:
@@ -120,7 +124,6 @@ AI Career Copilot
     except Exception as e:
         print(f"Failed to send interview email: {e}")
         return False
-
 
 def check_and_send_interview_reminders(db, user_id):
     today = date.today()
@@ -1145,6 +1148,13 @@ def test_email():
     try:
         user = db.query(User).filter(User.id == session["user_id"]).first()
 
+        if not user or not user.email:
+            return render_template(
+                "test_email_result.html",
+                message="Error: User record or email not found in the database. Please log in again.",
+                status="error"
+            )
+
         success = send_interview_email(
             user.email,
             "Google",
@@ -1156,7 +1166,7 @@ def test_email():
             message = f"Test email successfully sent to {user.email}! Check your inbox."
             status = "success"
         else:
-            message = "Failed to send email. Check your terminal/logs."
+            message = "Failed to send email. If running on Railway Trial, outbound SMTP ports (587/465) are blocked by the host firewall."
             status = "error"
 
         return render_template(
@@ -1164,10 +1174,15 @@ def test_email():
             message=message,
             status=status
         )
+    except Exception as e:
+        print(f"Error in test-email route: {e}")
+        return render_template(
+            "test_email_result.html",
+            message=f"An error occurred: {str(e)}",
+            status="error"
+        )
     finally:
         db.close()
-
-
 @app.route("/logout")
 def logout():
     session.clear()
