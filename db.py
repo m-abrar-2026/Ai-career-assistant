@@ -2,15 +2,19 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-# 1. Try checking standard URL environment variables
+print("--- CHECKING ENVIRONMENT VARIABLES ---")
+print("DATABASE_URL present:", bool(os.getenv("DATABASE_URL")))
+print("MYSQL_URL present:", bool(os.getenv("MYSQL_URL")))
+print("MYSQL_PRIVATE_URL present:", bool(os.getenv("MYSQL_PRIVATE_URL")))
+
 database_url = (
+        os.getenv("DATABASE_URL") or
         os.getenv("MYSQL_URL") or
-        os.getenv("MYSQL_PRIVATE_URL") or
-        os.getenv("DATABASE_URL")
+        os.getenv("MYSQL_PRIVATE_URL")
 )
 
-# 2. If URLs aren't found, build it automatically from Railway's native MySQL variables
 if not database_url:
+    # Fallback to individual components if URL is missing
     host = os.getenv("MYSQLHOST")
     port = os.getenv("MYSQLPORT", "3306")
     user = os.getenv("MYSQLUSER")
@@ -21,9 +25,11 @@ if not database_url:
         database_url = f"mysql+pymysql://{user}:{password}@{host}:{port}/{database}"
 
 if not database_url:
-    raise ValueError("No database URL or MySQL credentials found in environment variables!")
+    raise ValueError(
+        "CRITICAL ERROR: No database URL found! "
+        "Please check your Railway Variables tab and ensure DATABASE_URL or MYSQL_URL is set."
+    )
 
-# Ensure SQLAlchemy uses the pymysql driver
 if database_url.startswith("mysql://"):
     database_url = database_url.replace("mysql://", "mysql+pymysql://", 1)
 
