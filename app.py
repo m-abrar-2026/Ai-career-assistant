@@ -18,7 +18,7 @@ from dotenv import load_dotenv
 from PyPDF2 import PdfReader
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from werkzeug.utils import secure_filename
 from werkzeug.security import (
     generate_password_hash,
@@ -137,6 +137,7 @@ AI Career Copilot
         print(f"Failed to send interview email: {e}")
         return False
 
+
 def check_and_send_interview_reminders(db, user_id):
     today = date.today()
 
@@ -174,11 +175,17 @@ def check_and_send_interview_reminders(db, user_id):
 
             if 0 <= job.days_left <= 3:
                 message = f"Upcoming Interview: {job.company} ({job.role}) on {job_date}"
+                cleared_message = f"[CLEARED] {message}"
 
                 existing = (
                     db.query(Notification)
                     .filter(Notification.user_id == user_id)
-                    .filter(Notification.message == message)
+                    .filter(
+                        or_(
+                            Notification.message == message,
+                            Notification.message == cleared_message
+                        )
+                    )
                     .first()
                 )
 
@@ -404,6 +411,7 @@ def dashboard():
         notifications = (
             db.query(Notification)
             .filter(Notification.user_id == user_id)
+            .filter(~Notification.message.like("[CLEARED]%"))
             .order_by(Notification.id.desc())
             .limit(5)
             .all()
@@ -1116,11 +1124,18 @@ def profile():
 
         total_jobs = db.query(Job).filter(Job.user_id == user_id).count()
         total_resumes = db.query(Resume).filter(Resume.user_id == user_id).count()
-        total_notifications = db.query(Notification).filter(Notification.user_id == user_id).count()
+
+        total_notifications = (
+            db.query(Notification)
+            .filter(Notification.user_id == user_id)
+            .filter(~Notification.message.like("[CLEARED]%"))
+            .count()
+        )
 
         notifications = (
             db.query(Notification)
             .filter(Notification.user_id == user_id)
+            .filter(~Notification.message.like("[CLEARED]%"))
             .order_by(Notification.id.desc())
             .limit(10)
             .all()
@@ -1241,20 +1256,33 @@ def delete_resume(id):
         db.close()
 
 
-@app.route("/clear-notifications")
+@app.route("/clear-notifications", methods=["GET", "POST"])
 def clear_notifications():
     if "user_id" not in session:
         return redirect("/")
 
     db = SessionLocal()
     try:
-        db.query(Notification).filter(Notification.user_id == session["user_id"]).delete()
-        db.commit()
+        user_id = session["user_id"]
+        active_notes = (
+            db.query(Notification)
+            .filter(Notification.user_id == user_id)
+            .filter(~Notification.message.like("[CLEARED]%"))
+            .all()
+        )
 
+        for note in active_notes:
+            note.message = f"[CLEARED] {note.message}"
+
+        db.commit()
         flash("Notifications cleared!", "success")
-        return redirect("/dashboard")
+    except Exception as e:
+        db.rollback()
+        print(f"Error clearing notifications: {e}")
     finally:
         db.close()
+
+    return redirect(request.referrer or "/dashboard")
 
 
 @app.route("/update-email-preference", methods=["POST"])
@@ -1282,6 +1310,8 @@ def update_email_preference():
         db.close()
 
     return redirect(url_for('profile'))
+
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
     app.run(host="0.0.0.0", port=port)
