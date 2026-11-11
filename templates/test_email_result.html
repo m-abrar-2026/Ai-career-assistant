@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Email Status - AI Career Copilot</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0b0f19 0%, #1e293b 100%);
+            color: #0f172a;
+            padding: 20px;
+        }
+
+        .result-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .icon-wrapper {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px auto;
+        }
+
+        .icon-wrapper.success {
+            background: rgba(16, 185, 129, 0.12);
+            color: #10b981;
+        }
+
+        .icon-wrapper.error {
+            background: rgba(239, 68, 68, 0.12);
+            color: #ef4444;
+        }
+
+        .icon-wrapper svg {
+            width: 36px;
+            height: 36px;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: #0f172a;
+            letter-spacing: -0.5px;
+        }
+
+        .sub-text {
+            font-size: 0.92rem;
+            color: #64748b;
+            margin-bottom: 32px;
+            line-height: 1.5;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: #0f172a;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 14px 24px;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 0.92rem;
+            transition: all 0.2s ease;
+            width: 100%;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+        }
+
+        .back-btn:hover {
+            background: #3b82f6;
+            transform: translateY(-1px);
+        }
+
+        .back-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="result-card">
+        <div class="icon-wrapper {% if status == 'error' %}error{% else %}success{% endif %}">
+            <i data-lucide="{% if status == 'error' %}alert-circle{% else %}check-circle-2{% endif %}"></i>
+        </div>
+
+        <h2>{% if status == 'error' %}Delivery Failed{% else %}Test Email Dispatched!{% endif %}</h2>
+        <p class="sub-text">{{ message }}</p>
+
+        <a href="/dashboard" class="back-btn">
+            <i data-lucide="arrow-left"></i>
+            <span>Back to Dashboard</span>
+        </a>
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

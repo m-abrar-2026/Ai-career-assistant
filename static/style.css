@@ -1,0 +1,307 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    background:#f4f7fc;
+    color:#333;
+    min-height:100vh;
+}
+
+/* Navbar */
+
+.navbar{
+    background:#2563eb;
+    color:white;
+    padding:15px 30px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.navbar h1{
+    font-size:24px;
+}
+
+.navbar a{
+    color:white;
+    text-decoration:none;
+    margin-left:20px;
+    font-weight:500;
+}
+
+.navbar a:hover{
+    text-decoration:underline;
+}
+
+/* Authentication Pages */
+
+.auth-container{
+    min-height:90vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+
+.auth-card{
+    width:100%;
+    max-width:450px;
+    background:white;
+    padding:30px;
+    border-radius:15px;
+    box-shadow:0 5px 20px rgba(0,0,0,0.1);
+}
+
+.auth-card h2{
+    text-align:center;
+    color:#2563eb;
+    margin-bottom:10px;
+}
+
+.sub-text{
+    color:#666;
+    text-align:center;
+    margin-bottom:20px;
+}
+
+.auth-card form{
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+}
+
+.auth-card input{
+    width:100%;
+    padding:12px;
+    border:1px solid #ddd;
+    border-radius:8px;
+    outline:none;
+}
+
+.auth-card input:focus{
+    border-color:#2563eb;
+}
+
+.auth-card button{
+    background:#2563eb;
+    color:white;
+    border:none;
+    padding:12px;
+    border-radius:8px;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.auth-card button:hover{
+    background:#1d4ed8;
+}
+
+.auth-links{
+    text-align:center;
+    margin-top:15px;
+}
+
+.auth-links a{
+    text-decoration:none;
+    color:#2563eb;
+    font-weight:500;
+}
+
+.switch-auth{
+    text-align:center;
+    margin-top:18px;
+}
+
+.switch-auth a{
+    text-decoration:none;
+    color:#2563eb;
+    font-weight:bold;
+}
+
+/* Error and Success Messages */
+
+.error-box{
+    background:#fee2e2;
+    color:#dc2626;
+    padding:12px;
+    border-radius:8px;
+    text-align:center;
+    margin-bottom:15px;
+    font-weight:600;
+}
+
+.success-box{
+    background:#dcfce7;
+    color:#15803d;
+    padding:12px;
+    border-radius:8px;
+    text-align:center;
+    margin-bottom:15px;
+    font-weight:600;
+}
+/* Dashboard */
+
+.container{
+    width:90%;
+    max-width:1000px;
+    margin:30px auto;
+}
+
+.card{
+    background:white;
+    padding:20px;
+    border-radius:15px;
+    margin-bottom:20px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+
+.card h2,
+.card h3{
+    color:#2563eb;
+    margin-bottom:10px;
+}
+
+input,
+textarea,
+select{
+    width:100%;
+    padding:12px;
+    border:1px solid #ddd;
+    border-radius:8px;
+    outline:none;
+}
+
+input:focus,
+textarea:focus,
+select:focus{
+    border-color:#2563eb;
+}
+
+textarea{
+    min-height:200px;
+    resize:vertical;
+}
+
+button{
+    background:#2563eb;
+    color:white;
+    border:none;
+    padding:12px 20px;
+    border-radius:8px;
+    font-size:15px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#1d4ed8;
+}
+
+/* Results */
+
+.result-section{
+    margin-top:20px;
+}
+
+.result-section h3{
+    color:#2563eb;
+    margin-top:15px;
+}
+
+.result-section ul{
+    padding-left:20px;
+}
+
+
+/* History */
+
+.history-container{
+    width:90%;
+    max-width:1100px;
+    margin:30px auto;
+}
+
+.resume-box{
+    background:#f8fafc;
+    border:1px solid #ddd;
+    border-radius:10px;
+    padding:15px;
+    max-height:300px;
+    overflow-y:auto;
+    margin-bottom:15px;
+}
+
+.resume-box pre{
+    white-space:pre-wrap;
+    word-wrap:break-word;
+    font-size:14px;
+    font-family:inherit;
+}
+
+ul{
+    margin-top:8px;
+    margin-bottom:15px;
+}
+
+li{
+    margin-bottom:5px;
+}
+
+hr{
+    border:none;
+    height:1px;
+    background:#ddd;
+    margin:15px 0;
+}
+
+/* Scrollbar */
+
+::-webkit-scrollbar{
+    width:8px;
+}
+
+::-webkit-scrollbar-thumb{
+    background:#2563eb;
+    border-radius:10px;
+}
+
+::-webkit-scrollbar-track{
+    background:#eee;
+}
+
+/* Responsive */
+
+@media(max-width:768px){
+
+    .navbar{
+        flex-direction:column;
+        gap:10px;
+        text-align:center;
+    }
+
+    .auth-card{
+        max-width:100%;
+    }
+
+    .container,
+    .history-container{
+        width:95%;
+    }
+
+    button{
+        width:100%;
+    }
+}
+.footer{
+    text-align:center;
+    padding:20px;
+    margin-top:30px;
+    color:#666;
+}
+
+.footer p{
+    font-size:14px;
+}

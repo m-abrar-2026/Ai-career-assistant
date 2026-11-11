@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATS Analysis - AI Career Copilot</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        :root {
+            --sidebar-width: 260px;
+            --bg-main: #f8fafc;
+            --sidebar-bg: #0f172a;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --hover-bg: #f1f5f9;
+        }
+
+        [data-theme="dark"] {
+            --bg-main: #0b0f19;
+            --sidebar-bg: #030712;
+            --card-bg: #111827;
+            --text-main: #f9fafb;
+            --text-muted: #9ca3af;
+            --border-color: #1f2937;
+            --hover-bg: #1f2937;
+        }
+
+        body {
+            display: flex;
+            min-height: 100vh;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--sidebar-bg);
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            padding: 24px 16px;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+        }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            padding: 0 12px 28px;
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+        .logo-mark {
+            width: 32px;
+            height: 32px;
+            background: #ffffff;
+            color: #0f172a;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.1rem;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 14px;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: #1e293b;
+            color: #ffffff;
+        }
+
+        .sidebar-bottom {
+            border-top: 1px solid #1e293b;
+            padding-top: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        /* Main Wrapper */
+        .main-wrapper {
+            flex: 1;
+            margin-left: 0;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        /* Top Header */
+        .top-header {
+            height: 76px;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            position: sticky;
+            top: 0;
+            z-index: 90;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .sidebar-toggle-btn {
+            background: var(--hover-bg);
+            border: 1px solid var(--border-color);
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-main);
+        }
+
+        .page-switcher {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: var(--hover-bg);
+            padding: 4px;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            overflow-x: auto;
+        }
+
+        .switcher-link {
+            padding: 8px 14px;
+            font-size: 0.83rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 10px;
+            white-space: nowrap;
+        }
+
+        .switcher-link:hover {
+            color: var(--text-main);
+        }
+
+        .switcher-link.active {
+            background: var(--card-bg);
+            color: var(--text-main);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            position: relative;
+        }
+
+        .theme-toggle-btn {
+            background: var(--hover-bg);
+            border: 1px solid var(--border-color);
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-main);
+        }
+
+        .theme-toggle-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 0.88rem;
+            text-decoration: none;
+            color: var(--text-main);
+            padding: 6px 12px;
+            background: var(--hover-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            background: #3b82f6;
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        /* Content Area */
+        .page-content {
+            padding: 40px 32px;
+            max-width: 840px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .result-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+        }
+
+        .result-card h1 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .result-card h1 svg {
+            width: 26px;
+            height: 26px;
+            color: #3b82f6;
+        }
+
+        .sub-text {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 24px;
+        }
+
+        .score-banner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--hover-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+        }
+
+        .score-banner h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #3b82f6;
+        }
+
+        hr {
+            border: none;
+            height: 1px;
+            background: var(--border-color);
+            margin: 24px 0;
+        }
+
+        .section-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .skill-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .chip {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .chip-matched {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .chip-missing {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 20px;
+            padding: 12px 20px;
+            background: #0f172a;
+            color: #ffffff;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+
+        [data-theme="dark"] .btn-back {
+            background: #3b82f6;
+        }
+
+        .btn-back:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Left Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <a href="/dashboard" class="brand-logo">
+            <div class="logo-mark">A</div>
+            <span>AI Career Copilot</span>
+        </a>
+
+        <nav class="nav-menu">
+            <a href="/dashboard" class="nav-item"><i data-lucide="home"></i> Dashboard</a>
+            <a href="/jobs" class="nav-item"><i data-lucide="briefcase"></i> Job Tracker</a>
+            <a href="/add-job" class="nav-item"><i data-lucide="plus-circle"></i> Add Job</a>
+            <a href="/my-resumes" class="nav-item active"><i data-lucide="shield-check"></i> My Resumes</a>
+            <a href="/upload-resume" class="nav-item"><i data-lucide="file-text"></i> Upload Resume</a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <a href="/profile" class="nav-item"><i data-lucide="user"></i> Profile</a>
+            <a href="/logout" class="nav-item"><i data-lucide="log-out"></i> Logout</a>
+        </div>
+    </aside>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="sidebar-toggle-btn" id="toggleSidebar" title="Toggle Sidebar">
+                    <i data-lucide="menu" style="width:20px;height:20px;"></i>
+                </button>
+
+                <nav class="page-switcher">
+                    <a href="/dashboard" class="switcher-link">Dashboard</a>
+                    <a href="/jobs" class="switcher-link">Job Tracker</a>
+                    <a href="/add-job" class="switcher-link">Add Job</a>
+                    <a href="/my-resumes" class="switcher-link active">My Resumes</a>
+                    <a href="/upload-resume" class="switcher-link">Upload Resume</a>
+                </nav>
+            </div>
+
+            <div class="user-actions">
+                <button class="theme-toggle-btn" id="themeToggleBtn" title="Toggle Dark/Light Mode">
+                    <i data-lucide="moon" id="themeIcon"></i>
+                </button>
+
+                <a href="/profile" class="user-profile">
+                    <div class="avatar">A</div>
+                    <span>Account</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <main class="page-content">
+            <div class="result-card">
+                <h1><i data-lucide="shield-check"></i> ATS Analysis</h1>
+                <p class="sub-text">Automated tracking system compatibility report for your uploaded resume.</p>
+
+                <div class="score-banner">
+                    <div>
+                        <span style="font-size:0.85rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Overall ATS Score</span>
+                        <h2 style="margin-top:4px;">{{ score }}/100</h2>
+                    </div>
+                    <i data-lucide="award" style="width:40px;height:40px;color:#3b82f6;"></i>
+                </div>
+
+                <hr>
+
+                <h3 class="section-title"><i data-lucide="check-circle" style="color:#10b981;"></i> Skills Found</h3>
+                <div class="skill-chips">
+                    {% for skill in skills_found %}
+                        <span class="chip chip-matched">{{ skill }}</span>
+                    {% else %}
+                        <p style="font-size:0.85rem; color:var(--text-muted);">No key skills identified.</p>
+                    {% endfor %}
+                </div>
+
+                <hr>
+
+                <h3 class="section-title"><i data-lucide="x-circle" style="color:#f87171;"></i> Missing Skills</h3>
+                <div class="skill-chips">
+                    {% for skill in missing_skills %}
+                        <span class="chip chip-missing">{{ skill }}</span>
+                    {% else %}
+                        <p style="font-size:0.85rem; color:var(--text-muted);">No missing foundational skills!</p>
+                    {% endfor %}
+                </div>
+
+                <a href="/my-resumes" class="btn-back">
+                    <i data-lucide="arrow-left" style="width:16px;height:16px;"></i> Back to My Resumes
+                </a>
+            </div>
+        </main>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        lucide.createIcons();
+
+        // Sidebar Toggle
+        const toggleBtn = document.getElementById('toggleSidebar');
+        const sidebar = document.getElementById('sidebar');
+
+        toggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            sidebar.classList.toggle('open');
+        });
+
+        window.addEventListener('click', (e) => {
+            if (!sidebar.contains(e.target) && !toggleBtn.contains(e.target)) {
+                sidebar.classList.remove('open');
+            }
+        });
+
+        // Dark/Light Mode Toggle Logic
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+        const themeIcon = document.getElementById('themeIcon');
+        const htmlElement = document.documentElement;
+
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        if (savedTheme === 'dark') {
+            htmlElement.setAttribute('data-theme', 'dark');
+            themeIcon.setAttribute('data-lucide', 'sun');
+            lucide.createIcons();
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            const currentTheme = htmlElement.getAttribute('data-theme');
+            if (currentTheme === 'dark') {
+                htmlElement.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+                themeIcon.setAttribute('data-lucide', 'moon');
+            } else {
+                htmlElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                themeIcon.setAttribute('data-lucide', 'sun');
+            }
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>

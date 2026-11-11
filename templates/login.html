@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - AI Career Copilot</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: #f1f5f9;
+            color: #0f172a;
+            padding: 20px;
+        }
+
+        /* Main Split Card Container - Identical to Signup */
+        .auth-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            width: 900px;
+            max-width: 100%;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* Left Branding Panel */
+        .auth-sidebar {
+            background:
+                linear-gradient(135deg, rgba(6, 22, 58, 0.9) 0%, rgba(30, 58, 138, 0.8) 50%, rgba(126, 34, 206, 0.7) 100%),
+                url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80') center/cover no-repeat;
+            padding: 40px;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .brand-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 1.05rem;
+        }
+
+        .logo-mark {
+            width: 32px;
+            height: 32px;
+            background: #ffffff;
+            color: #0f172a;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.1rem;
+        }
+
+        .brand-middle {
+            margin: 40px 0;
+        }
+
+        .badge-tag {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .brand-middle h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .brand-middle p {
+            font-size: 0.88rem;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+
+        .brand-pills {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .pill-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 0.82rem;
+            font-weight: 500;
+            width: fit-content;
+        }
+
+        .pill-item svg {
+            width: 15px;
+            height: 15px;
+        }
+
+        /* Right Form Panel */
+        .auth-form-panel {
+            padding: 48px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .form-header {
+            margin-bottom: 24px;
+        }
+
+        .form-header h2 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 6px;
+        }
+
+        .form-header p {
+            font-size: 0.88rem;
+            color: #64748b;
+        }
+
+        /* Flash Messages */
+        .flash-container {
+            margin-bottom: 20px;
+        }
+        .flash-alert {
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-size: 0.83rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        .flash-error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+        .flash-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 14px;
+            color: #94a3b8;
+            width: 18px;
+            height: 18px;
+        }
+
+        .form-input {
+            width: 100%;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px 14px 12px 44px;
+            font-size: 0.9rem;
+            color: #0f172a;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        .form-footer-row {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 16px;
+            font-size: 0.82rem;
+            font-weight: 600;
+        }
+
+        .form-footer-row a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+
+        .form-footer-row a:hover {
+            text-decoration: underline;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: #0f172a;
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            padding: 13px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.2s ease;
+        }
+
+        .submit-btn:hover {
+            background: #3b82f6;
+        }
+
+        .submit-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .form-footer a {
+            color: #0f172a;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .form-footer a:hover {
+            color: #3b82f6;
+        }
+
+        @media (max-width: 768px) {
+            .auth-container {
+                grid-template-columns: 1fr;
+            }
+            .auth-sidebar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="auth-container">
+        <!-- Left Visual Sidebar -->
+        <div class="auth-sidebar">
+            <div class="brand-top">
+                <div class="logo-mark">A</div>
+                <span>AI Career Copilot</span>
+            </div>
+
+            <div class="brand-middle">
+                <span class="badge-tag">WELCOME BACK</span>
+                <h2>Login to Workspace</h2>
+                <p>Track your applications, analyze resumes, and accelerate your career with AI.</p>
+            </div>
+
+            <div class="brand-pills">
+                <div class="pill-item">
+                    <i data-lucide="file-text"></i>
+                    <span>Resume Optimizer</span>
+                </div>
+                <div class="pill-item">
+                    <i data-lucide="shield-check"></i>
+                    <span>ATS Compatibility Scanner</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Login Form Panel -->
+        <div class="auth-form-panel">
+            <div class="form-header">
+                <h2>Login</h2>
+                <p>Enter your credentials to access your workspace.</p>
+            </div>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-container" id="flashContainer">
+                        {% for category, message in messages %}
+                            <div class="flash-alert {% if category == 'error' %}flash-error{% else %}flash-success{% endif %}">
+                                <i data-lucide="{% if category == 'error' %}alert-circle{% else %}check-circle-2{% endif %}" style="width: 18px; height: 18px; flex-shrink: 0;"></i>
+                                <span>{{ message }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <form action="/" method="POST">
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <i data-lucide="mail" class="input-icon"></i>
+                        <input type="email" name="email" class="form-input" placeholder="Email address" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <i data-lucide="lock" class="input-icon"></i>
+                        <input type="password" name="password" class="form-input" placeholder="Password" required>
+                    </div>
+                </div>
+
+                <div class="form-footer-row">
+                    <a href="/forgot-password">Forgot Password?</a>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <span>Login</span>
+                    <i data-lucide="arrow-right"></i>
+                </button>
+            </form>
+
+            <div class="form-footer">
+                Don't have an account? <a href="/signup">Signup</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // Automatically hide flash alert banners after 4 seconds
+        setTimeout(() => {
+            const flashContainer = document.getElementById('flashContainer');
+            if (flashContainer) {
+                flashContainer.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                flashContainer.style.opacity = '0';
+                flashContainer.style.transform = 'translateY(-10px)';
+                setTimeout(() => flashContainer.remove(), 500);
+            }
+        }, 4000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+# Environment variables
+.env
+
+# Virtual environment
+.venv/
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# IDE files
+.idea/
+.vscode/
+
+# Uploads and generated files
+static/uploads/
+static/career_report_*.pdf
+
+# Test/debug files
+test_groq.py
+check_models.py
+list_models.py
+gemini_service.py
+
+# OS files
+.DS_Store
+Thumbs.db

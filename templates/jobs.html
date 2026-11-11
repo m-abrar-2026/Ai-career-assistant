@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Tracker - AI Career Copilot</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        :root {
+            --sidebar-width: 260px;
+            --bg-main: #f8fafc;
+            --sidebar-bg: #0f172a;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --hover-bg: #f1f5f9;
+        }
+
+        [data-theme="dark"] {
+            --bg-main: #0b0f19;
+            --sidebar-bg: #030712;
+            --card-bg: #111827;
+            --text-main: #f9fafb;
+            --text-muted: #9ca3af;
+            --border-color: #1f2937;
+            --hover-bg: #1f2937;
+        }
+
+        body {
+            display: flex;
+            min-height: 100vh;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--sidebar-bg);
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            padding: 24px 16px;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+        }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            padding: 0 12px 28px;
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+        .logo-mark {
+            width: 32px;
+            height: 32px;
+            background: #ffffff;
+            color: #0f172a;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.1rem;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 14px;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: #1e293b;
+            color: #ffffff;
+        }
+
+        .sidebar-bottom {
+            border-top: 1px solid #1e293b;
+            padding-top: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        /* Main Wrapper */
+        .main-wrapper {
+            flex: 1;
+            margin-left: 0;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        /* Top Header */
+        .top-header {
+            height: 76px;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            position: sticky;
+            top: 0;
+            z-index: 90;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .sidebar-toggle-btn {
+            background: var(--hover-bg);
+            border: 1px solid var(--border-color);
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-main);
+        }
+
+        .page-switcher {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: var(--hover-bg);
+            padding: 4px;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            overflow-x: auto;
+        }
+
+        .switcher-link {
+            padding: 8px 14px;
+            font-size: 0.83rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 10px;
+            white-space: nowrap;
+        }
+
+        .switcher-link:hover {
+            color: var(--text-main);
+        }
+
+        .switcher-link.active {
+            background: var(--card-bg);
+            color: var(--text-main);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            position: relative;
+        }
+
+        .theme-toggle-btn {
+            background: var(--hover-bg);
+            border: 1px solid var(--border-color);
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-main);
+        }
+
+        .theme-toggle-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 0.88rem;
+            text-decoration: none;
+            color: var(--text-main);
+            padding: 6px 12px;
+            background: var(--hover-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            background: #3b82f6;
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        /* Content Area */
+        .page-content {
+            padding: 40px 32px;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .page-header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .page-header-row h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .page-header-row h2 svg {
+            width: 28px;
+            height: 28px;
+            color: #3b82f6;
+        }
+
+        .btn-primary {
+            padding: 10px 18px;
+            background: #0f172a;
+            color: #ffffff;
+            border-radius: 12px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: opacity 0.2s;
+        }
+
+        [data-theme="dark"] .btn-primary {
+            background: #3b82f6;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        /* Search Bar Form */
+        .search-form {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+
+        .search-form input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 0.92rem;
+            background: var(--card-bg);
+            color: var(--text-main);
+        }
+
+        .search-form input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .search-form button {
+            padding: 12px 24px;
+            background: var(--hover-bg);
+            color: var(--text-main);
+            border: 1.5px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .search-form button:hover {
+            background: var(--border-color);
+        }
+
+        /* Jobs Grid */
+        .jobs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 20px;
+        }
+
+        .job-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .job-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+        }
+
+        .job-card h3 {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .job-role {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .job-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            width: fit-content;
+        }
+
+        .status-applied { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+        .status-interview { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+        .status-offer { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+        .status-rejected { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 16px;
+        }
+
+        .btn-edit {
+            flex: 1;
+            padding: 8px 14px;
+            background: var(--hover-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-align: center;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-delete {
+            flex: 1;
+            padding: 8px 14px;
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 10px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-align: center;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 40px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Left Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <a href="/dashboard" class="brand-logo">
+            <div class="logo-mark">A</div>
+            <span>AI Career Copilot</span>
+        </a>
+
+        <nav class="nav-menu">
+            <a href="/dashboard" class="nav-item"><i data-lucide="home"></i> Dashboard</a>
+            <a href="/jobs" class="nav-item active"><i data-lucide="briefcase"></i> Job Tracker</a>
+            <a href="/add-job" class="nav-item"><i data-lucide="plus-circle"></i> Add Job</a>
+            <a href="/my-resumes" class="nav-item"><i data-lucide="shield-check"></i> My Resumes</a>
+            <a href="/upload-resume" class="nav-item"><i data-lucide="file-text"></i> Upload Resume</a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <a href="/profile" class="nav-item"><i data-lucide="user"></i> Profile</a>
+            <a href="/logout" class="nav-item"><i data-lucide="log-out"></i> Logout</a>
+        </div>
+    </aside>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="sidebar-toggle-btn" id="toggleSidebar" title="Toggle Sidebar">
+                    <i data-lucide="menu" style="width:20px;height:20px;"></i>
+                </button>
+
+                <nav class="page-switcher">
+                    <a href="/dashboard" class="switcher-link">Dashboard</a>
+                    <a href="/jobs" class="switcher-link active">Job Tracker</a>
+                    <a href="/add-job" class="switcher-link">Add Job</a>
+                    <a href="/my-resumes" class="switcher-link">My Resumes</a>
+                    <a href="/upload-resume" class="switcher-link">Upload Resume</a>
+                </nav>
+            </div>
+
+            <div class="user-actions">
+                <button class="theme-toggle-btn" id="themeToggleBtn" title="Toggle Dark/Light Mode">
+                    <i data-lucide="moon" id="themeIcon"></i>
+                </button>
+
+                <a href="/profile" class="user-profile">
+                    <div class="avatar">A</div>
+                    <span>Account</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <main class="page-content">
+            <div class="page-header-row">
+                <h2><i data-lucide="briefcase"></i> My Applications</h2>
+                <a href="/add-job" class="btn-primary">
+                    <i data-lucide="plus"></i> Add New Job
+                </a>
+            </div>
+
+            <!-- Search Form -->
+            <form method="GET" action="/jobs" class="search-form">
+                <input
+                    type="text"
+                    name="search"
+                    placeholder="Search by company name..."
+                    value="{{ request.args.get('search', '') }}"
+                >
+                <button type="submit">Search</button>
+            </form>
+
+            <div class="jobs-grid">
+                {% if jobs %}
+                    {% for job in jobs %}
+                    <div class="job-card">
+                        <div>
+                            <h3>{{ job.company }}</h3>
+                            <p class="job-role">{{ job.role }}</p>
+
+                            <div class="job-meta">
+                                <div>Applied: {{ job.applied_date }}</div>
+                                <div>
+                                    Status:
+                                    <span class="status-badge {% if job.status == 'Applied' %}status-applied{% elif job.status == 'Interview' %}status-interview{% elif job.status == 'Offer' %}status-offer{% else %}status-rejected{% endif %}">
+                                        {{ job.status }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-actions">
+                            <a href="/edit-job/{{ job.id }}" class="btn-edit">
+                                <i data-lucide="edit-3" style="width:14px;height:14px;"></i> Edit
+                            </a>
+                            <a href="/delete-job/{{ job.id }}" class="btn-delete" onclick="return confirm('Are you sure you want to delete this job application?');">
+                                <i data-lucide="trash-2" style="width:14px;height:14px;"></i> Delete
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <p>No job applications found. Click "Add New Job" to start tracking your applications!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        lucide.createIcons();
+
+        // Sidebar Toggle
+        const toggleBtn = document.getElementById('toggleSidebar');
+        const sidebar = document.getElementById('sidebar');
+
+        toggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            sidebar.classList.toggle('open');
+        });
+
+        window.addEventListener('click', (e) => {
+            if (!sidebar.contains(e.target) && !toggleBtn.contains(e.target)) {
+                sidebar.classList.remove('open');
+            }
+        });
+
+        // Dark/Light Mode Toggle Logic
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+        const themeIcon = document.getElementById('themeIcon');
+        const htmlElement = document.documentElement;
+
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        if (savedTheme === 'dark') {
+            htmlElement.setAttribute('data-theme', 'dark');
+            themeIcon.setAttribute('data-lucide', 'sun');
+            lucide.createIcons();
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            const currentTheme = htmlElement.getAttribute('data-theme');
+            if (currentTheme === 'dark') {
+                htmlElement.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+                themeIcon.setAttribute('data-lucide', 'moon');
+            } else {
+                htmlElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                themeIcon.setAttribute('data-lucide', 'sun');
+            }
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>
