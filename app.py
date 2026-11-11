@@ -350,7 +350,6 @@ def dashboard():
     offers = len([j for j in jobs if j.status == "Offer"])
     rejected = len([j for j in jobs if j.status == "Rejected"])
 
-    # Dynamic completion flags for dashboard progress tracking
     has_resume = resumes_count > 0
     has_jobs = total > 0
     has_interviews = interviews > 0
@@ -408,7 +407,6 @@ def add_job():
         role = request.form.get("role", "Unknown")
         status = request.form.get("status", "Applied")
 
-        # Safely parse applied_date with a fallback to today if missing
         applied_date_str = request.form.get("applied_date")
         if applied_date_str:
             try:
@@ -450,6 +448,8 @@ def add_job():
         return redirect("/jobs")
 
     return render_template("add_job.html")
+
+
 @app.route("/jobs")
 def jobs():
     if "user_id" not in session:
@@ -1004,7 +1004,6 @@ def profile():
     total_resumes = db.query(Resume).filter(Resume.user_id == session["user_id"]).count()
     total_notifications = db.query(Notification).filter(Notification.user_id == session["user_id"]).count()
 
-    # Fetch user resumes for the profile card
     resumes = db.query(Resume).filter(Resume.user_id == session["user_id"]).all()
 
     return render_template(
@@ -1070,6 +1069,7 @@ def logout():
     session.clear()
     return redirect("/")
 
+
 @app.route("/delete-resume/<int:id>")
 def delete_resume(id):
     if "user_id" not in session:
@@ -1079,7 +1079,6 @@ def delete_resume(id):
     resume = db.query(Resume).filter(Resume.id == id, Resume.user_id == session["user_id"]).first()
 
     if resume:
-        # Optional: remove physical file from upload folder if it exists
         try:
             file_path = os.path.join(app.config["UPLOAD_FOLDER"], resume.filename)
             if os.path.exists(file_path):
@@ -1108,4 +1107,5 @@ def clear_notifications():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host="0.0.0.0", port=port)
