@@ -1118,6 +1118,14 @@ def profile():
         total_resumes = db.query(Resume).filter(Resume.user_id == user_id).count()
         total_notifications = db.query(Notification).filter(Notification.user_id == user_id).count()
 
+        notifications = (
+            db.query(Notification)
+            .filter(Notification.user_id == user_id)
+            .order_by(Notification.id.desc())
+            .limit(10)
+            .all()
+        )
+
         resumes = db.query(Resume).filter(Resume.user_id == user_id).all()
 
         return render_template(
@@ -1126,6 +1134,7 @@ def profile():
             total_jobs=total_jobs,
             total_resumes=total_resumes,
             total_notifications=total_notifications,
+            notifications=notifications,
             resumes=resumes
         )
     finally:
