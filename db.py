@@ -8,9 +8,9 @@ print("MYSQL_URL present:", bool(os.getenv("MYSQL_URL")))
 print("MYSQL_PRIVATE_URL present:", bool(os.getenv("MYSQL_PRIVATE_URL")))
 
 database_url = (
-        os.getenv("DATABASE_URL") or
-        os.getenv("MYSQL_URL") or
-        os.getenv("MYSQL_PRIVATE_URL")
+    os.getenv("DATABASE_URL")
+    or os.getenv("MYSQL_URL")
+    or os.getenv("MYSQL_PRIVATE_URL")
 )
 
 if not database_url:
@@ -33,7 +33,11 @@ if not database_url:
 if database_url.startswith("mysql://"):
     database_url = database_url.replace("mysql://", "mysql+pymysql://", 1)
 
-engine = create_engine(database_url)
+engine = create_engine(
+    database_url,
+    pool_pre_ping=True,
+    connect_args={"connect_timeout": 10}
+)
 
 SessionLocal = sessionmaker(
     autocommit=False,
