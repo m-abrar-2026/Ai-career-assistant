@@ -739,5 +739,41 @@
             lucide.createIcons();
         });
     </script>
+<div class="profile-card">
+    <h3>Email Preferences</h3>
+    <form method="POST" action="/update-email-preference">
+        <div class="form-group" style="display: flex; align-items: center; justify-content: space-between; margin-top: 15px;">
+            <div>
+                <label style="font-weight: 600; display: block;">Enable Emails</label>
+                <span style="font-size: 0.82rem; color: var(--text-muted);">Receive job alerts and interview reminders via email</span>
+            </div>
+
+            <label class="switch" style="position: relative; display: inline-block; width: 50px; height: 26px;">
+                <input type="checkbox" name="email_enabled" {% if user.email_enabled %}checked{% endif %} onchange="this.form.submit()" style="opacity: 0; width: 0; height: 0;">
+                <span class="slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px;"></span>
+            </label>
+        </div>
+    </form>
+</div>
+
+<style>
+    .switch input:checked + .slider {
+        background-color: #3b82f6;
+    }
+    .switch input:checked + .slider:before {
+        transform: translateX(24px);
+    }
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+</style>
 </body>
 </html>

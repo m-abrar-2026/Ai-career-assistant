@@ -13,6 +13,7 @@ from flask import (
     url_for
 )
 from flask_mail import Mail, Message
+from flask_login import login_required, current_user
 from dotenv import load_dotenv
 from PyPDF2 import PdfReader
 from reportlab.lib.pagesizes import letter
@@ -82,7 +83,18 @@ def create_notification(db, user_id, message):
         print(f"Error creating notification: {e}")
 
 
-def send_interview_email(email, company, role, interview_date):
+def send_interview_email(email, company, role, interview_date, user_id=None):
+    # Check if user has explicitly enabled emails if user_id is available
+    if user_id:
+        db_check = SessionLocal()
+        try:
+            u = db_check.query(User).filter(User.id == user_id).first()
+            if u and not u.email_enabled:
+                print(f"Email not sent: User {user_id} has disabled email notifications.")
+                return False
+        finally:
+            db_check.close()
+
     if not app.config.get("MAIL_USERNAME") or not app.config.get("MAIL_PASSWORD"):
         print("Email not sent: MAIL_USERNAME or MAIL_PASSWORD is missing.")
         return False
@@ -172,13 +184,14 @@ def check_and_send_interview_reminders(db, user_id):
 
                 if not existing:
                     create_notification(db, user_id, message)
-                    if user and user.email:
+                    if user and user.email and user.email_enabled:
                         try:
                             send_interview_email(
                                 user.email,
                                 job.company,
                                 job.role,
-                                job_date
+                                job_date,
+                                user_id=user_id
                             )
                         except Exception as mail_err:
                             print(f"Skipping email dispatch: {mail_err}")
@@ -259,7 +272,8 @@ def signup():
 
             user = User(
                 email=email,
-                password=generate_password_hash(password)
+                password=generate_password_hash(password),
+                email_enabled=False  # Off by default
             )
 
             db.add(user)
@@ -1159,14 +1173,15 @@ def test_email():
             user.email,
             "Google",
             "Software Engineer",
-            date.today() + timedelta(days=1)
+            date.today() + timedelta(days=1),
+            user_id=user.id
         )
 
         if success:
             message = f"Test email successfully sent to {user.email}! Check your inbox."
             status = "success"
         else:
-            message = "Failed to send email. If running on Railway Trial, outbound SMTP ports (587/465) are blocked by the host firewall."
+            message = "Failed to send email. Check if email notifications are enabled in your profile or if outbound SMTP ports are blocked."
             status = "error"
 
         return render_template(
@@ -1183,6 +1198,8 @@ def test_email():
         )
     finally:
         db.close()
+
+
 @app.route("/logout")
 def logout():
     session.clear()
@@ -1229,6 +1246,29 @@ def clear_notifications():
         return redirect("/dashboard")
     finally:
         db.close()
+
+
+@app.route("/update-email-preference", methods=["POST"])
+@login_required
+def update_email_preference():
+    db_session = SessionLocal()
+    try:
+        # Merge current_user into this session to prevent detached instance errors
+        user = db_session.merge(current_user)
+
+        # Checkbox is in form if checked, otherwise missing
+        user.email_enabled = 'email_enabled' in request.form
+        db_session.commit()
+
+        status = "enabled" if user.email_enabled else "disabled"
+        flash(f"Email notifications have been {status}.", "success")
+    except Exception as e:
+        db_session.rollback()
+        flash("Failed to update email preference. Please try again.", "error")
+    finally:
+        db_session.close()
+
+    return redirect(url_for('profile'))
 
 
 if __name__ == "__main__":

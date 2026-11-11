@@ -2,8 +2,12 @@ from sqlalchemy import Column
 from sqlalchemy import Integer
 from sqlalchemy import String
 from sqlalchemy import Date
-from db import Base
+from sqlalchemy import Text
+from sqlalchemy import ForeignKey
 from sqlalchemy import Boolean
+from sqlalchemy import DateTime
+from datetime import datetime
+from db import Base
 
 class User(Base):
     __tablename__ = "users"
@@ -22,7 +26,14 @@ class User(Base):
     password = Column(
         String(255)
     )
-from sqlalchemy import Column, Integer, String, Text, Date, ForeignKey
+
+    # Email toggled off by default
+    email_enabled = Column(
+        Boolean,
+        default=False,
+        nullable=False
+    )
+
 
 class Job(Base):
     __tablename__ = "jobs"
@@ -42,11 +53,7 @@ class Job(Base):
     interview_date = Column(Date, nullable=True)
 
     notes = Column(Text)
-from sqlalchemy import Column
-from sqlalchemy import Integer
-from sqlalchemy import String
-from sqlalchemy import ForeignKey
-from sqlalchemy import Text
+
 
 class Resume(Base):
     __tablename__ = "resumes"
@@ -66,11 +73,9 @@ class Resume(Base):
     )
 
     resume_text = Column(Text)
-from sqlalchemy import DateTime
-from datetime import datetime
+
 
 class Activity(Base):
-
     __tablename__ = "activities"
 
     id = Column(
@@ -90,8 +95,9 @@ class Activity(Base):
     #     DateTime,
     #     default=datetime.utcnow
     # )
-class Notification(Base):
 
+
+class Notification(Base):
     __tablename__ = "notifications"
 
     id = Column(
@@ -111,8 +117,3 @@ class Notification(Base):
         Boolean,
         default=False
     )
-
-    # created_at = Column(
-    #     DateTime,
-    #     default=datetime.utcnow
-    # )
